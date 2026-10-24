@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SehatKu
 
-## Getting Started
+**Layanan kesehatan terpadu**: aplikasi web untuk antrean, rekam medis, obat, dan rujukan di fasilitas kesehatan, dengan tampilan terpisah untuk pasien, petugas loket, dokter, apoteker, dan kader kesehatan.
 
-First, run the development server:
+Proyek ini dibuat bersama tim untuk sebuah hackathon. Repo ini adalah fork dari [marionmogens/hackathon_joints](https://github.com/marionmogens/hackathon_joints).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Fitur
+
+Menu yang tampil bergantung pada peran pengguna.
+
+**Pasien**
+- Antrean dan pra-triase: ambil nomor antrean dari rumah
+- Jadwal dokter yang sedang praktik
+- Kartu dan biaya (penjamin dan rincian biaya)
+- Riwayat pemeriksaan, obat, dan hasil lab
+- Alarm minum obat dengan konfirmasi dosis
+- Rujukan: perpanjang dari rumah
+- Kesehatan anak: tumbuh kembang dan imunisasi
+- Data diri dan anggota keluarga
+- SOS darurat: kirim lokasi ke petugas
+- Pengaduan layanan
+
+**Petugas loket**
+- Loket dan panggilan antrean
+- Pendaftaran kiosk
+- Kasir dan penjaminan
+- Laporan SOS dan pengaduan yang masuk
+- Stok obat
+
+**Dokter**
+- Ruang periksa
+- Rekam medis berdasarkan NIK
+- Persetujuan rujukan
+
+**Apoteker**
+- Farmasi dan stok obat
+
+**Kader kesehatan**
+- Pantau kepatuhan minum obat
+- Posyandu anak
+
+## Teknologi
+
+- [Next.js](https://nextjs.org) 16 (App Router) dan React 19
+- [Supabase](https://supabase.com) (database PostgreSQL, autentikasi, dan row level security)
+- Tailwind CSS 4
+
+## Struktur
+
+```
+app/          # halaman (login, dashboard per fitur, antrean, petugas)
+components/   # komponen UI bersama
+lib/          # menu per peran, koneksi Supabase, triase, grafik pertumbuhan WHO
+supabase/     # skema database dan data contoh
+  schema.sql              # skema lengkap dan aturan akses per peran
+  seed.sql                # data contoh fiktif
+  jadikan-staf.sql        # ubah akun menjadi petugas, dokter, apoteker, atau kader
+  migrasi-stok-obat.sql   # migrasi untuk database versi lama
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Cara menjalankan
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+1. Buat proyek di [Supabase](https://supabase.com).
+2. Di **SQL Editor** Supabase, jalankan `supabase/schema.sql`, lalu `supabase/seed.sql`.
+   `schema.sql` menghapus semua tabel di schema `public` sebelum membuatnya ulang, jadi jangan dijalankan di database yang sudah berisi data penting.
+3. Buat file `.env.local` di akar proyek:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://<id-proyek>.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key dari Project Settings > API>
+   ```
+4. Pasang dependensi dan jalankan:
+   ```bash
+   npm install
+   npm run dev
+   ```
+5. Buka <http://localhost:3000>.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Membuat akun staf
 
-## Learn More
+Akun baru selalu berperan **pasien**. Untuk mencoba peran lain:
 
-To learn more about Next.js, take a look at the following resources:
+1. Daftarkan akun lewat halaman `/login`, misalnya `petugas@contoh.com`, `dokter@contoh.com`, `apoteker@contoh.com`, dan `kader@contoh.com`.
+2. Jalankan `supabase/jadikan-staf.sql` di SQL Editor (email di file itu bisa disesuaikan).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Catatan
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Semua data di `supabase/seed.sql` fiktif: fasilitas, dokter, dan pasien contoh (NIK berpola `99000000...`) bukan data sungguhan.
+- Aplikasi ini dibuat untuk hackathon dan belum diuji untuk dipakai di fasilitas kesehatan sungguhan.
